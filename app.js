@@ -18,4 +18,4 @@ setInterval(function(){
   if (count > 1) {
     takePicture(count-1);
   }
-}, 500);
+}, 2000);
