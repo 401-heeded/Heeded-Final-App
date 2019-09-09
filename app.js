@@ -15,5 +15,7 @@ function takePicture (count) {
 
 setInterval(function(){
   count ++;
-  takePicture(count);
+  if (count > 1) {
+    takePicture(count-1);
+  }
 }, 500);
