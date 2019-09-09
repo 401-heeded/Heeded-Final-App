@@ -23,9 +23,11 @@ function facialRecognition (count) {
     return;
     }
     console.log('hello------------------------------------------');
-    console.log(`stdout yaw: ${stdout.FaceDetails[0].Pose.Yaw}`);
-    console.log(`stdout pitch: ${stdout.FaceDetails[0].Pose.Pitch}`);
-    console.log(`stdout eyes open: ${stdout.FaceDetails[0].EyesOpen.Value}`);
+    if ( stdout.FaceDetails.length ) {
+      console.log(`stdout yaw: ${stdout.FaceDetails[0].Pose.Yaw}`);
+      console.log(`stdout pitch: ${stdout.FaceDetails[0].Pose.Pitch}`);
+      console.log(`stdout eyes open: ${stdout.FaceDetails[0].EyesOpen.Value}`);
+    }
     console.error(`stderr: ${stderr}`);
   });
 }
