@@ -13,7 +13,7 @@ const getFile = (file) => {
       if(err) { throw err; }
       const params = {
         Bucket: "spike-test2",
-        Key:"IMG_3221.jpg", //Chance- name of the S3 bucket
+        Key:file.split('/')[2], //Chance- name of the S3 bucket
         ACL: "public-read-write",
         Body: data,  //Chance- name of the photo in the bucket
       };
@@ -24,4 +24,7 @@ const getFile = (file) => {
     })
 };
 
-getFile('./photo/IMG_3221.jpg')
+module.exports = getFile;
+
+
+
