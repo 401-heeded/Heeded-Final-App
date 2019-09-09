@@ -10,7 +10,7 @@ function takePicture (count) {
       console.error(`exec error: ${error}`);
     return;
     }
-    console.log(`stdout: ${stdout}`);
+    // console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
   });
 }
@@ -23,7 +23,7 @@ function facialRecognition (count) {
     return;
     }
     console.log('hello------------------------------------------');
-    console.log(`stdout yaw: ${stdout.FaceDetails}`);
+    console.log(`stdout yaw: ${stdout}`);
     // console.log(`stdout pitch: ${stdout.FaceDetails[0].Pose.Pitch}`);
     // console.log(`stdout eyes open: ${stdout.FaceDetails[0].EyesOpen.Value}`);
     console.error(`stderr: ${stderr}`);
