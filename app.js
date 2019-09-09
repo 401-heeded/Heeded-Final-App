@@ -1,5 +1,7 @@
 'use strict';
 
+const upload = require('./s3/upload');
+
 const { exec } = require('child_process');
 let count = 0;
 function takePicture (count) {
@@ -16,4 +18,5 @@ function takePicture (count) {
 setInterval(function(){
   count ++;
   takePicture(count);
+  upload(`./images/image${count}.jpg`)
 }, 500);
