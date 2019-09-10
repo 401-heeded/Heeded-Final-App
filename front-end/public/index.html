@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Auth Test</title>
+</head>
+
+<body>
+  <main>
+
+    <div id="oauth"></div>
+
+  </main>
+
+  <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+
+  <script>
+    let AWS_URL = "https://has-the-shining.auth.us-east-2.amazoncognito.com/login";
+    let options = {
+      client_id: '40m2gpoj7p923kr805tht1o852',
+      redirect_uri: 'http://localhost:3000/oauth',
+      scope: 'email openid',
+      response_type: 'code'
+    };
+    let QueryString = Object.keys(options).map((key, i) => {
+      return `${key}=` + encodeURIComponent(options[key]);
+    }).join("&");
+    let authURL = `${AWS_URL}?${QueryString}`;
+    $('#oauth').append(`<a href="${authURL}">Login With AWS</a>`);
+  </script>
+
+
+</body>
+
+</html>

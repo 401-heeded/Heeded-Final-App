@@ -5,14 +5,15 @@ const upload = require('./s3/upload');
 const {exec} = require('child_process');
 
 //Global Variables
-let count = 0;
+//improve variable name
+let frameCount = 0;
 let run = true;
 let sessionData = [];
+let engagementThreshold = 20;
 
-function takePicture(count) {
+function takePicture(frameCount) {
 
-  exec(`fswebcam -r 1280x960 images/image${count}.jpg`, (error, stdout, stderr) => {
-
+  exec(`fswebcam -r 1280x960 images/image${frameCount}.jpg`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return;
@@ -22,9 +23,13 @@ function takePicture(count) {
   });
 }
 
-function facialRecognition (count) {
-  let string = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${count}.jpg"}}' --attributes "ALL"`;
-  exec(string, (error, stdout, stderr) => {
+/**
+ * function sends photo from S3 to rekognition
+ * @param count
+ */
+function facialRecognition (frameCount) {
+  let awsTerminalCommand = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${frameCount}.jpg"}}' --attributes "ALL"`;
+  exec(awsTerminalCommand, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return;
@@ -37,7 +42,7 @@ function facialRecognition (count) {
       let frameData = { Engaged: 0, Unengaged: 0 };
       output.forEach( person => {
         analyzeFrame( person.Pose.Yaw, person.Pose.Pitch, frameData );
-        console.log(`image${count}.jpg------------------------------------------`);
+        console.log(`image${frameCount}.jpg------------------------------------------`);
         console.log(`yaw: ${person.Pose.Yaw}`);
         console.log(`pitch: ${person.Pose.Pitch}`);
       });
@@ -60,9 +65,14 @@ function sessionAnalysis ( sessionDataArray ){
 }
 
 function analyzeFrame( yaw, pitch, frameData ){
-  if ( Math.abs(yaw) < 20 && Math.abs(pitch) < 20 ) frameData.Engaged++;
-  else frameData.Unengaged++;
-}
+  //make consistent with other if statements
+  // dont hard code number, make it a variable
+  if ( Math.abs(yaw) < engagementThreshold && Math.abs(pitch) < engagementThreshold ) {
+    frameData.Engaged++;
+  } else {
+     frameData.Unengaged++;
+  }
+};
 
 const startRekognition = ((run) => {
   const looper = setInterval(function () {
@@ -73,22 +83,19 @@ const startRekognition = ((run) => {
       clearInterval(looper);
     }
     if (run) {
-      count++;
+      frameCount++;
 
       //Take a picture
-      takePicture(count);
+      takePicture(frameCount);
 
       //uploads image to S3
-      if (count > 3) {
-        upload(`./images/image${count - 1}.jpg`);
+      if (frameCount > 3) {
+        upload(`./images/image${frameCount - 1}.jpg`);
       }
       //Send images to rekognition
-      if (count > 4) {
-        facialRecognition(count - 2);
+      if (frameCount > 4) {
+        facialRecognition(frameCount - 2);
       }
     }
   }, 3000);
 });
-
-startRekognition();
-
