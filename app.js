@@ -5,12 +5,15 @@ const upload = require('./s3/upload');
 const {exec} = require('child_process');
 
 //Global Variables
-let count = 0;
+//improve variable name
+let frameCount = 0;
 let run = true;
+let sessionData = [];
+let engagementThreshold = 20;
 
-function takePicture(count) {
+function takePicture(frameCount) {
 
-  exec(`fswebcam -r 1280x720 images/image${count}.jpg`, (error, stdout, stderr) => {
+  exec(`fswebcam -r 1280x720 images/image${frameCount}.jpg`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return;
@@ -24,45 +27,75 @@ function takePicture(count) {
  * function sends photo from S3 to rekognition
  * @param count
  */
-function facialRecognition(count) {
-  exec(`aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${count}.jpg"}}' --attributes "ALL"
-`, (error, stdout, stderr) => {
+function facialRecognition (frameCount) {
+  //make name better
+  let awsTerminalCommand = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${frameCount}.jpg"}}' --attributes "ALL"`;
+  exec(awsTerminalCommand, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return;
     }
-    let output = JSON.parse(stdout);
 
-    if (output.FaceDetails) {
-      console.log('hello------------------------------------------');
-      console.log(`stdout yaw: ${output.FaceDetails[0].Pose.Yaw}`);
-      console.log(`stdout pitch: ${output.FaceDetails[0].Pose.Pitch}`);
-      console.log(`stdout eyes open: ${output.FaceDetails[0].EyesOpen.Value}`);
+    let parsed = JSON.parse(stdout);
+
+    if (parsed.FaceDetails) {
+      let output = parsed.FaceDetails;
+      let frameData = { Engaged: 0, Unengaged: 0 };
+      output.forEach( person => {
+        analyzeFrame( person.Pose.Yaw, person.Pose.Pitch, frameData );
+        console.log(`image${frameCount}.jpg------------------------------------------`);
+        console.log(`yaw: ${person.Pose.Yaw}`);
+        console.log(`pitch: ${person.Pose.Pitch}`);
+      });
+      console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
+      sessionData.push( frameData );
     }
     console.error(`stderr: ${stderr}`);
   });
 }
+
+function sessionAnalysis ( sessionDataArray ){
+
+  let data = sessionDataArray.reduce( (accumulator, frame) => {
+    accumulator.Engaged += frame.Engaged;
+    accumulator.Unengaged += frame.Unengaged;
+    return accumulator;
+  }, { Engaged:0, Unengaged:0 });
+  console.log( data );
+  return data;
+}
+
+function analyzeFrame( yaw, pitch, frameData ){
+  //make consistent with other if statements
+  // dont hard code number, make it a variable
+  if ( Math.abs(yaw) < engagementThreshold && Math.abs(pitch) < engagementThreshold ) {
+    frameData.Engaged++;
+  } else {
+     frameData.Unengaged++;
+  }
+};
 
 const startRekognition = ((run) => {
   const looper = setInterval(function () {
     //stop code from running
     if (!run) {
       console.log('--------stopping---------');
+      sessionAnalysis(sessionData);
       clearInterval(looper);
     }
     if (run) {
-      count++;
+      frameCount++;
 
       //Take a picture
-      takePicture(count);
+      takePicture(frameCount);
 
       //uploads image to S3
-      if (count > 3) {
-        upload(`./images/image${count - 1}.jpg`);
+      if (frameCount > 3) {
+        upload(`./images/image${frameCount - 1}.jpg`);
       }
       //Send images to rekognition
-      if (count > 4) {
-        facialRecognition(count - 2);
+      if (frameCount > 4) {
+        facialRecognition(frameCount - 2);
       }
     }
   }, 500);
