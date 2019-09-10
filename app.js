@@ -34,22 +34,22 @@ function facialRecognition (frameCount) {
       console.error(`exec error: ${error}`);
       return;
     }
-
     let parsed = JSON.parse(stdout);
-
-    if (parsed.FaceDetails) {
+    if(parsed.FaceDetails) {
       let output = parsed.FaceDetails;
-      let frameData = { Engaged: 0, Unengaged: 0 };
-      output.forEach( person => {
-        analyzeFrame( person.Pose.Yaw, person.Pose.Pitch, frameData );
-        console.log(`image${frameCount}.jpg------------------------------------------`);
-        console.log(`yaw: ${person.Pose.Yaw}`);
-        console.log(`pitch: ${person.Pose.Pitch}`);
-      });
+      let frameData = output.reduce( ( engagementCount, person ) => {
+        if (Math.abs(person.Pose.Yaw) < engagementThreshold && Math.abs(person.Pose.Pitch) < engagementThreshold ) {
+          engagementCount.Engaged++;
+        } else {
+          engagementCount.Unengaged++;
+        }
+        return engagementCount;
+      }, { Engaged: 0, Unengaged: 0});
       console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
-      sessionData.push( frameData );
+      sessionData.push(frameData);
     }
     console.error(`stderr: ${stderr}`);
+
   });
 }
 
@@ -64,17 +64,7 @@ function sessionAnalysis ( sessionDataArray ){
   return data;
 }
 
-function analyzeFrame( yaw, pitch, frameData ){
-  //make consistent with other if statements
-  // dont hard code number, make it a variable
-  if ( Math.abs(yaw) < engagementThreshold && Math.abs(pitch) < engagementThreshold ) {
-    frameData.Engaged++;
-  } else {
-     frameData.Unengaged++;
-  }
-};
-
-const startRekognition = ((run) => {
+const startRekognition = ( (run) => {
   const looper = setInterval(function () {
     //stop code from running
     if (!run) {
@@ -99,3 +89,5 @@ const startRekognition = ((run) => {
     }
   }, 3000);
 });
+
+startRekognition(run);
