@@ -9,7 +9,7 @@ const morgan = require('morgan');
 const errorHandler = require('./src/middleware/error.js');
 const notFound = require('./src/middleware/404.js');
 const authRouter = require('./src/auth/router.js');
-const startRekognition = require('./rekognition.js');
+const startRekognition = require('./app.js');
 
 // Prepare the express server
 const server = express();
