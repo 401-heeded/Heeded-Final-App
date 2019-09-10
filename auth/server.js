@@ -6,9 +6,10 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Esoteric Resources
-const errorHandler = require('./middleware/error.js');
-const notFound = require('./middleware/404.js');
-const authRouter = require('./auth/router.js');
+const errorHandler = require('./src/middleware/error.js');
+const notFound = require('./src/middleware/404.js');
+const authRouter = require('./src/auth/router.js');
+const startRekognition = require('./rekognition.js');
 
 // Prepare the express server
 const server = express();
@@ -22,6 +23,8 @@ server.use(express.urlencoded({ extended: true }));
 
 // Routes
 server.use(authRouter);
+
+server.get('/rekognition', startRekognition);
 
 // Catchalls
 server.use(notFound);
