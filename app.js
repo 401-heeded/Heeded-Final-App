@@ -1,14 +1,16 @@
 'use strict';
 
 const upload = require('./s3/upload');
-
 const { exec } = require('child_process');
+
+let sessionData = [];
 let count = 0;
+
 function takePicture (count) {
   exec(`fswebcam -r 1280x720 images/image${count}.jpg`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
-    return;
+      return;
     }
     // console.log(`stdout: ${stdout}`);
     console.error(`stderr: ${stderr}`);
@@ -16,22 +18,34 @@ function takePicture (count) {
 }
 
 function facialRecognition (count) {
-  exec(`aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${count}.jpg"}}' --attributes "ALL"
-`, (error, stdout, stderr) => {
+  let string = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${count}.jpg"}}' --attributes "ALL"`;
+  exec(string, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
-    return;
+      return;
     }
-    let output = JSON.parse(stdout);
 
-    if (output.FaceDetails) {
-      console.log('hello------------------------------------------');
-      console.log(`stdout yaw: ${output.FaceDetails[0].Pose.Yaw}`);
-      console.log(`stdout pitch: ${output.FaceDetails[0].Pose.Pitch}`);
-      console.log(`stdout eyes open: ${output.FaceDetails[0].EyesOpen.Value}`);
+    let parsed = JSON.parse(stdout);
+
+    if (parsed.FaceDetails) {
+      let output = parsed.FaceDetails;
+      let frameData = { Engaged: 0, Unengaged: 0 };
+      output.forEach( person => {
+        analyzeFrame( person.Pose.Yaw, person.Pose.Pitch, frameData );
+        console.log(`image${count}.jpg------------------------------------------`);
+        console.log(`yaw: ${person.Pose.Yaw}`);
+        console.log(`pitch: ${person.Pose.Pitch}`);
+      });
+      console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
+      sessionData.push( frameData );
     }
     console.error(`stderr: ${stderr}`);
   });
+}
+
+function analyzeFrame( yaw, pitch, frameData ){
+  if ( Math.abs(yaw) < 20 && Math.abs(pitch) < 20 ) frameData.Engaged++;
+  else frameData.Unengaged++;
 }
 
 setInterval(function(){
@@ -39,7 +53,7 @@ setInterval(function(){
   takePicture(count);
   
   if (count > 3) {
-    upload(`./images/image${count -1}.jpg`);
+    upload(`./images/image${count-1}.jpg`);
   }
   if (count > 4) {
     facialRecognition(count-2);
