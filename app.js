@@ -1,13 +1,18 @@
 'use strict';
 
 const upload = require('./s3/upload');
-const { exec } = require('child_process');
 
-let sessionData = [];
+const {exec} = require('child_process');
+
+//Global Variables
 let count = 0;
+let run = true;
+let sessionData = [];
 
-function takePicture (count) {
-  exec(`fswebcam -r 1280x720 images/image${count}.jpg`, (error, stdout, stderr) => {
+function takePicture(count) {
+
+  exec(`fswebcam -r 1280x960 images/image${count}.jpg`, (error, stdout, stderr) => {
+
     if (error) {
       console.error(`exec error: ${error}`);
       return;
@@ -45,12 +50,13 @@ function facialRecognition (count) {
 
 function sessionAnalysis ( sessionDataArray ){
 
-  return sessionDataArray.reduce( (accumulator, frame) => {
+  let data = sessionDataArray.reduce( (accumulator, frame) => {
     accumulator.Engaged += frame.Engaged;
     accumulator.Unengaged += frame.Unengaged;
     return accumulator;
   }, { Engaged:0, Unengaged:0 });
-
+  console.log( data );
+  return data;
 }
 
 function analyzeFrame( yaw, pitch, frameData ){
@@ -58,14 +64,31 @@ function analyzeFrame( yaw, pitch, frameData ){
   else frameData.Unengaged++;
 }
 
-setInterval(function(){
-  count ++;
-  takePicture(count);
-  
-  if (count > 3) {
-    upload(`./images/image${count-1}.jpg`);
-  }
-  if (count > 4) {
-    facialRecognition(count-2);
-  }
-}, 3000);
+const startRekognition = ((run) => {
+  const looper = setInterval(function () {
+    //stop code from running
+    if (!run) {
+      console.log('--------stopping---------');
+      sessionAnalysis(sessionData);
+      clearInterval(looper);
+    }
+    if (run) {
+      count++;
+
+      //Take a picture
+      takePicture(count);
+
+      //uploads image to S3
+      if (count > 3) {
+        upload(`./images/image${count - 1}.jpg`);
+      }
+      //Send images to rekognition
+      if (count > 4) {
+        facialRecognition(count - 2);
+      }
+    }
+  }, 3000);
+});
+
+startRekognition();
+
