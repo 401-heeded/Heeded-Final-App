@@ -10,7 +10,26 @@ function takePicture (count) {
       console.error(`exec error: ${error}`);
     return;
     }
-    console.log(`stdout: ${stdout}`);
+    // console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+  });
+}
+
+function facialRecognition (count) {
+  exec(`aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${count}.jpg"}}' --attributes "ALL"
+`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+    return;
+    }
+    let output = JSON.parse(stdout);
+
+    if (output.FaceDetails) {
+      console.log('hello------------------------------------------');
+      console.log(`stdout yaw: ${output.FaceDetails[0].Pose.Yaw}`);
+      console.log(`stdout pitch: ${output.FaceDetails[0].Pose.Pitch}`);
+      console.log(`stdout eyes open: ${output.FaceDetails[0].EyesOpen.Value}`);
+    }
     console.error(`stderr: ${stderr}`);
   });
 }
@@ -20,6 +39,9 @@ setInterval(function(){
   takePicture(count);
   
   if (count > 3) {
-    upload(`./images/image${count -1}.jpg`)
+    upload(`./images/image${count -1}.jpg`);
   }
-}, 2000);
+  if (count > 4) {
+    facialRecognition(count-2);
+  }
+}, 3000);
