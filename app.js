@@ -22,12 +22,13 @@ function facialRecognition (count) {
       console.error(`exec error: ${error}`);
     return;
     }
+    let output = JSON.parse(stdout);
 
-    if (stdout.FaceDetails) {
+    if (output.FaceDetails) {
       console.log('hello------------------------------------------');
-      console.log(`stdout yaw: ${stdout.FaceDetails[0].Pose.Yaw}`);
-      console.log(`stdout pitch: ${stdout.FaceDetails[0].Pose.Pitch}`);
-      console.log(`stdout eyes open: ${stdout.FaceDetails[0].EyesOpen.Value}`);
+      console.log(`stdout yaw: ${output.FaceDetails[0].Pose.Yaw}`);
+      console.log(`stdout pitch: ${output.FaceDetails[0].Pose.Pitch}`);
+      console.log(`stdout eyes open: ${output.FaceDetails[0].EyesOpen.Value}`);
     }
     console.error(`stderr: ${stderr}`);
   });
