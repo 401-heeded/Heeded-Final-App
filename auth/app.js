@@ -1,6 +1,6 @@
 'use strict';
 
-const upload = require('./s3/upload');
+const upload = require('../s3/upload');
 
 const {exec} = require('child_process');
 
@@ -88,6 +88,14 @@ const startRekognition = ( (run) => {
       }
     }
   }, 3000);
+
 });
 
-startRekognition(run);
+
+function recognitionHandler(req, res) {
+  // anything from the client => req
+  // anything you want to return => res
+}
+
+module.exports =  startRekognition;
+
