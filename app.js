@@ -43,6 +43,16 @@ function facialRecognition (count) {
   });
 }
 
+function sessionAnalysis ( sessionDataArray ){
+
+  return sessionDataArray.reduce( (accumulator, frame) => {
+    accumulator.Engaged += frame.Engaged;
+    accumulator.Unengaged += frame.Unengaged;
+    return accumulator;
+  }, { Engaged:0, Unengaged:0 });
+
+}
+
 function analyzeFrame( yaw, pitch, frameData ){
   if ( Math.abs(yaw) < 20 && Math.abs(pitch) < 20 ) frameData.Engaged++;
   else frameData.Unengaged++;
