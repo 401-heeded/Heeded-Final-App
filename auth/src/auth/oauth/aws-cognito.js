@@ -21,24 +21,24 @@ const authorize = (request) => {
       redirect_uri: `${API}/oauth`,
       grant_type: 'authorization_code',
     })
-    .then(response => {
-      let access_token = response.body.access_token;
-      console.log('(2)', access_token);
+    .then(response => { // TODO: remove this code block its, only useful for demonstration purposes.
+      let access_token = response.body.access_token; // this line can be moved to the next .then block
+      console.log('(2)', access_token); // Remove this for production.
       return access_token;
     })
     .then(token => {
-      console.log(SERVICE, token);
+      console.log(SERVICE, token); // remove console logging of sensitive info
       return superagent.get(SERVICE)
         .set('Authorization', `Bearer ${token}`)
-        .then(response => {
+        .then(response => { // I know we showed off this code in the demo but this then statement can be added to the overall chain of then statement and ideally should not be nested.
           let user = response.body;
           user.access_token = token;
-          console.log('(3)', user);
+          console.log('(3)', user); // this is considered sensitive, remove after debugging and commitint to production.
           return user;
         });
     })
     .then(oauthUser => {
-      console.log('(4) Create Our Account');
+      console.log('(4) Create Our Account'); // remove this as well after debugging complete.
       return Users.createFromOauth(oauthUser.email);
     })
     .then(actualUser => {
