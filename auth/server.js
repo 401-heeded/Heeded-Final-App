@@ -28,6 +28,7 @@ server.use(express.urlencoded({ extended: true }));
 server.use(authRouter);
 
 server.get('/', renderDataAnalytics);
+// testing route - change later
 server.get('/test', startRekognition);
 
 function renderDataAnalytics (req, res) {
