@@ -9,10 +9,13 @@ const morgan = require('morgan');
 const errorHandler = require('./src/middleware/error.js');
 const notFound = require('./src/middleware/404.js');
 const authRouter = require('./src/auth/router.js');
-const startRekognition = require('./app.js');
+const startRekognition = require('../front-end/app');
 
 // Prepare the express server
 const server = express();
+
+// Set the view engine for server-side templating
+server.set('view engine', 'ejs');
 
 // App Level MW
 server.use(cors());
@@ -24,7 +27,11 @@ server.use(express.urlencoded({ extended: true }));
 // Routes
 server.use(authRouter);
 
-server.get('/rekognition', startRekognition);
+server.get('/rekognition', renderDataAnalytics);
+
+function renderDataAnalytics (req, res) {
+  res.render('../front-end/public/analytics')
+}
 
 // Catchalls
 server.use(notFound);

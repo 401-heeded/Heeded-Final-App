@@ -1,8 +1,7 @@
 'use strict';
-const rekognition = require('../rekognition');
+const startRekognition = require('../auth/app');
 
-$('#start').on('click', function() {
-  console.log('hi you started');
-  startRekognition();
-  // $.ajax('/rekognition')
-});
+// $('#start').on('click', function() {
+//   console.log('hi you started');
+//   startRekognition();
+// });
