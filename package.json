@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/401-heeded/pi-server#readme",
   "devDependencies": {
-    "aws-sdk": "^2.254.1",
+    "aws-sdk": "^2.527.0",
     "body-parser": "1.18.3",
     "cookie-parser": "1.4.3",
     "fs-extra": "6.0.1",
