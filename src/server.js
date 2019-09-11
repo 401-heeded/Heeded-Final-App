@@ -30,15 +30,15 @@ server.use(authRouter);
 server.get('/data', renderDataAnalytics);
 // testing route - change later
 server.get('/test', startRekognition);
-server.get('/', renderHomePage);
+// server.get('/', renderHomePage);
 
 function renderDataAnalytics (req, res) {
   res.render('../front-end/public/analytics')
 }
 
-function renderHomePage (req, res) {
-  res.render('../front-end/public/index')
-}
+// function renderHomePage (req, res) {
+//   res.render('../front-end/public/index')
+// }
 // Catchalls
 server.use(notFound);
 server.use(errorHandler);
