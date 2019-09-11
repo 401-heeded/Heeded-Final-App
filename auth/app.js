@@ -10,16 +10,18 @@ let frameCount = 0;
 let run = true;
 let sessionData = [];
 let engagementThreshold = 20;
+const S3imageDelay = 3;
+const rekognitionDelay = 4;
 
 function takePicture(frameCount) {
 
   exec(`fswebcam -r 1280x960 images/image${frameCount}.jpg`, (error, stdout, stderr) => {
     if (error) {
-      console.error(`exec error: ${error}`);
+      errorHandler(error);
       return;
     }
     // console.log(`stdout: ${stdout}`);
-    console.error(`stderr: ${stderr}`);
+    errorHandler(stderr);
   });
 }
 
@@ -31,7 +33,7 @@ function facialRecognition (frameCount) {
   let awsTerminalCommand = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${frameCount}.jpg"}}' --attributes "ALL"`;
   exec(awsTerminalCommand, (error, stdout, stderr) => {
     if (error) {
-      console.error(`exec error: ${error}`);
+      errorHandler(error);
       return;
     }
     let parsed = JSON.parse(stdout);
@@ -48,7 +50,7 @@ function facialRecognition (frameCount) {
       console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
       sessionData.push(frameData);
     }
-    console.error(`stderr: ${stderr}`);
+    errorHandler(stderr);
 
   });
 }
@@ -79,13 +81,14 @@ const startRekognition = ( (run) => {
       takePicture(frameCount);
 
       //uploads image to S3
-      if (frameCount > 3) {
+      if (frameCount > S3imageDelay) {
         upload(`./images/image${frameCount - 1}.jpg`);
       }
       //Send images to rekognition
-      if (frameCount > 4) {
+      if (frameCount > rekognitionDelay) {
         facialRecognition(frameCount - 2);
       }
+
     }
   }, 3000);
 
@@ -95,6 +98,10 @@ const startRekognition = ( (run) => {
 function recognitionHandler(req, res) {
   // anything from the client => req
   // anything you want to return => res
+}
+
+function errorHandler(err){
+  console.log(err);
 }
 
 module.exports =  startRekognition;
