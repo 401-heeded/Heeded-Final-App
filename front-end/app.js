@@ -1,5 +1,5 @@
 'use strict';
-const startRekognition = require('../auth/app');
+const startRekognition = require('../src/rekognition/rekognition');
 
 
 

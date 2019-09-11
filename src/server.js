@@ -6,10 +6,10 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Esoteric Resources
-const errorHandler = require('./src/middleware/error.js');
-const notFound = require('./src/middleware/404.js');
-const authRouter = require('./src/auth/router.js');
-const startRekognition = require('./app.js');
+const errorHandler = require('./middleware/error.js');
+const notFound = require('./middleware/404.js');
+const authRouter = require('./auth/router.js');
+const startRekognition = require('./rekognition/rekognition');
 
 // Prepare the express server
 const server = express();
@@ -27,14 +27,18 @@ server.use(express.urlencoded({ extended: true }));
 // Routes
 server.use(authRouter);
 
-server.get('/', renderDataAnalytics);
+server.get('/data', renderDataAnalytics);
 // testing route - change later
 server.get('/test', startRekognition);
+server.get('/', renderHomePage);
 
 function renderDataAnalytics (req, res) {
   res.render('../front-end/public/analytics')
 }
 
+function renderHomePage (req, res) {
+  res.render('../front-end/public/index')
+}
 // Catchalls
 server.use(notFound);
 server.use(errorHandler);

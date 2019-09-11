@@ -1,6 +1,6 @@
 'use strict';
 
-const upload = require('../s3/upload');
+const upload = require('./upload');
 
 const {exec} = require('child_process');
 
