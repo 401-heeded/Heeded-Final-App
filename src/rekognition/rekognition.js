@@ -54,8 +54,9 @@ function facialRecognition (frameCount) {
         //   }
         // }
         return dataCount;
-      }, { Engaged: 0, Unengaged: 0, Average: 0, Emotion: [] }).Average;
-      console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
+      }, { Engaged: 0, Unengaged: 0, Average: 0 }).Average;
+      // console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
+      console.log(`Average: ${frameData}`);
       sessionData.push(frameData);
     }
     errorHandler(stderr);
