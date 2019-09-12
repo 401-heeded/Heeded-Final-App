@@ -1,8 +1,11 @@
 'use strict';
-const rekognition = require('../rekognition');
+const startRekognition = require('../src/rekognition/rekognition');
 
-$('#start').on('click', function() {
-  console.log('hi you started');
-  startRekognition();
-  // $.ajax('/rekognition')
-});
+
+
+// $(document).ready(function() {
+//   $('#start').on('click', function() {
+//     console.log('hi you started');
+//     startRekognition();
+//   });
+// });
