@@ -1,10 +1,8 @@
 'use strict'
 
-const AWS = require('aws-sdk');//Chance- brining in SDK and uuid
+const AWS = require('aws-sdk');
 AWS.config.update({ region: 'us-west-2' });
 
-
-const uuid = require('uuid');//Chance
 const S3 = new AWS.S3();
 const fs = require('fs');
 
@@ -16,9 +14,9 @@ const getFile = (file) => {
         }
         const params = {
           Bucket: "spike-test2",
-          Key: file.split('/')[2], //Chance- name of the S3 bucket
+          Key: file.split('/')[2],
           ACL: "public-read-write",
-          Body: data,  //Chance- name of the photo in the bucket
+          Body: data,
         };
         S3.putObject(params, function (err, data) {
           if (err) console.log(err, err.stack);
