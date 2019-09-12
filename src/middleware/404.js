@@ -2,6 +2,12 @@
 
 /**
  *
+ * 404 error.
+ * @module src/middleware/404.js
+ */
+
+/**
+ * Sends error not found
  * @param req
  * @param res
  * @param next

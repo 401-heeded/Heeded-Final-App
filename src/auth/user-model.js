@@ -3,6 +3,13 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
+/**
+ *
+ * user model.
+ * @module src/auth/user-model
+ */
+
+
 const users = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -10,6 +17,11 @@ const users = new mongoose.Schema({
   role: { type: String, default: 'user', enum: ['admin', 'editor', 'user'] },
 });
 
+/**
+ * Creating a model of the user
+ * @param email
+ * @returns {Promise<never>|Promise<unknown>}
+ */
 users.statics.createFromOauth = function (email) {
 
   if (!email) { return Promise.reject('Validation Error'); }
@@ -29,6 +41,10 @@ users.statics.createFromOauth = function (email) {
 
 };
 
+/**
+ * Generates token to AWS
+ * @returns {undefined|*}
+ */
 users.methods.generateToken = function () {
   let token = {
     id: this._id,

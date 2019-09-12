@@ -1,5 +1,12 @@
 'use strict'
 
+/**
+ *
+ * upload.
+ * @module src/rekognition/upload.js
+ */
+
+
 const AWS = require('aws-sdk');//Chance- brining in SDK and uuid
 AWS.config.update({ region: 'us-west-2' });
 
@@ -8,6 +15,10 @@ const uuid = require('uuid');//Chance
 const S3 = new AWS.S3();
 const fs = require('fs');
 
+/**
+ * Get file and upload to s3
+ * @param file
+ */
 const getFile = (file) => {
     fs.readFile(file, (err, data) => {
       if (file) {

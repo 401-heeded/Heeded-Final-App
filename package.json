@@ -6,7 +6,8 @@
   "scripts": {
     "startDB": "mkdir -p ./.db && mongod --dbpath ./.db",
     "test": "jest --verbose --coverage",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "jsdoc": "jsdoc -c ./docs/config/jsdoc.config.json"
   },
   "repository": {
     "type": "git",
@@ -28,8 +29,10 @@
     "dotenv": "^8.1.0",
     "ejs": "^2.7.1",
     "express": "^4.17.1",
+    "express-swagger-generator": "^1.1.15",
     "fs-extra": "6.0.1",
     "jest": "^24.9.0",
+    "jsdoc": "^3.6.3",
     "jsonwebtoken": "^8.5.1",
     "mongod": "^2.0.0",
     "mongoose": "^5.7.0",
@@ -41,6 +44,7 @@
     "path": "0.12.7",
     "requirejs": "^2.3.6",
     "superagent": "^5.1.0",
+    "swagger": "^0.7.5",
     "uuid": "^3.3.3"
   },
   "devDependencies": {

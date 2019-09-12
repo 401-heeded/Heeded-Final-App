@@ -10,6 +10,7 @@ const errorHandler = require('./middleware/error.js');
 const notFound = require('./middleware/404.js');
 const authRouter = require('./auth/router.js');
 const startRekognition = require('./rekognition/rekognition');
+const swagger = require(`../docs/config/swagger`);
 
 // Prepare the express server
 const server = express();
@@ -27,9 +28,31 @@ server.use(express.urlencoded({ extended: true }));
 // Routes
 server.use(authRouter);
 
+/** This is a route to get data analytics
+ * @route GET /data
+ * @param {object} req
+ * @param {object} res
+ * @param {function} next
+ * @returns {object} render ejs
+ */
 server.get('/data', renderDataAnalytics);
-// testing route - change later
+
+/** This is a route to start rekognition
+ * @route GET /test
+ * @param {object} req
+ * @param {object} res
+ * @param {function} next
+ * @returns {object} JSON
+ */
 server.get('/test', startRekognition);
+
+/** This is a route for oath re-route
+ * @route GET /
+ * @param {object} req
+ * @param {object} res
+ * @param {function} next
+ * @returns {object}
+ */
 server.get('/', renderHomePage);
 
 function renderDataAnalytics (req, res) {
@@ -39,6 +62,9 @@ function renderDataAnalytics (req, res) {
 function renderHomePage (req, res) {
   res.render('../front-end/public/index')
 }
+
+server.use('/docs', express.static('./docs'));
+
 // Catchalls
 server.use(notFound);
 server.use(errorHandler);
