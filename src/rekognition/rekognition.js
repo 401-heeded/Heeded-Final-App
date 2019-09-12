@@ -66,15 +66,14 @@ function sessionAnalysis ( sessionDataArray ){
   return data;
 }
 
-const startRekognition = ( (run) => {
+const startRekognition = ( () => {
   const looper = setInterval(function () {
-    //stop code from running
-    if (!run) {
+    let picCount = 0;
+    if (picCount > 30) {
       console.log('--------stopping---------');
       sessionAnalysis(sessionData);
       clearInterval(looper);
     }
-    if (run) {
       frameCount++;
 
       //Take a picture
@@ -88,8 +87,6 @@ const startRekognition = ( (run) => {
       if (frameCount > rekognitionDelay) {
         facialRecognition(frameCount - 2);
       }
-
-    }
   }, 3000);
 
 });
