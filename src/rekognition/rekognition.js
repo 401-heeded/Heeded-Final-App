@@ -1,68 +1,53 @@
 'use strict';
 
 const upload = require('./upload');
-
+const parseData = require('./parseData');
 const {exec} = require('child_process');
 
+module.exports = {};
+module.exports.upload = upload;
+module.exports.parseData = parseData;
+
 //Global Variables
-//improve variable name
 let frameCount = 0;
-let run = true;
 let sessionData = [];
-let engagementThreshold = 20;
-const emotionThreshold = 50;
+const engagementThreshold = 20;
+// const emotionThreshold = 50;
 const S3imageDelay = 3;
 const rekognitionDelay = 4;
+const picCountMax = 15;
 
-function takePicture(frameCount) {
+module.exports.takePicture = (frameCount) => {
 
   exec(`fswebcam -r 1280x960 images/image${frameCount}.jpg`, (error, stdout, stderr) => {
     if (error) {
       errorHandler(error);
       return;
     }
-    // console.log(`stdout: ${stdout}`);
     errorHandler(stderr);
+    return `image${frameCount}.jpg - ${stdout}`;
   });
 }
 
 /**
  * function sends photo from S3 to rekognition
- * @param count
+ * @param frameCount
  */
-function facialRecognition (frameCount) {
+module.exports.getFacialRecognitionData = (frameCount) => {
   let awsTerminalCommand = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${frameCount}.jpg"}}' --attributes "ALL"`;
   exec(awsTerminalCommand, (error, stdout, stderr) => {
     if (error) {
       errorHandler(error);
       return;
+    } else if ( stderr ) {
+      errorHandler(stderr);
+    } else {
+      return JSON.parse(stdout).FaceDetails;
     }
-    let parsed = JSON.parse(stdout);
-    if(parsed.FaceDetails) {
-      let output = parsed.FaceDetails;
-      let frameData = output.reduce( ( dataCount, person ) => {
-        if (Math.abs(person.Pose.Yaw) < engagementThreshold && Math.abs(person.Pose.Pitch) < engagementThreshold ) {
-          dataCount.Engaged++;
-        } else {
-          dataCount.Unengaged++;
-        }
-        dataCount.Average = dataCount.Engaged / ( dataCount.Engaged + dataCount.Unengaged );
-        // let emotionArray = output.Emotions;
-        // for( let i = 0; i < emotionArray.length; i++ ){
-        //   if( emotionArray[i].Confidence > emotionThreshold ){
-        //     dataCount.Emotion.push(emotionArray[i].Type);
-        //   }
-        // }
-        return dataCount;
-      }, { Engaged: 0, Unengaged: 0, Average: 0 }).Average;
-      // console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
-      console.log(`Average: ${frameData}`);
-      sessionData.push(frameData);
-    }
-    errorHandler(stderr);
-
   });
 }
+
+
 
 // function sessionAnalysis ( sessionDataArray ){
 //
@@ -76,31 +61,39 @@ function facialRecognition (frameCount) {
 // }
 
 const startRekognition = ( () => {
+  let picCount = 0;
   const looper = setInterval(function () {
-    let picCount = 0;
-    if (picCount > 15) {
+    if (picCount > picCountMax ) {
       console.log('--------stopping---------');
       // sessionAnalysis(sessionData);
       return sessionData;
       clearInterval(looper);
     }
-      frameCount++;
+    frameCount++;
 
-      //Take a picture
-      takePicture(frameCount);
+    //Take a picture
+    takePicture(frameCount);
 
-      //uploads image to S3
-      if (frameCount > S3imageDelay) {
-        upload(`./images/image${frameCount - 1}.jpg`);
-      }
-      //Send images to rekognition
-      if (frameCount > rekognitionDelay) {
-        facialRecognition(frameCount - 2);
-      }
-  }, 3000);
+    //uploads image to S3
+    if (frameCount > S3imageDelay) {
+      upload(`./images/image${frameCount - 1}.jpg`);
+    }
 
+    console.log(`/ image${frameCount - 1}.jpg /---------------------------------/ Remaining: ${picCountMax - picCount} /`);
+
+    //Send images to rekognition, get data, parse data
+    if (frameCount > rekognitionDelay) {
+      let data = getFacialRecognitionData(frameCount - 2);
+      let frameData = parseData( data, engagementThreshold );
+      sessionData.push( frameData );
+    }
+
+    picCount++;
+
+  }, 1500);
 });
 
+module.exports.startRekognition = startRekognition;
 
 function recognitionHandler(req, res) {
   // anything from the client => req
@@ -110,6 +103,4 @@ function recognitionHandler(req, res) {
 function errorHandler(err){
   console.log(err);
 }
-
-module.exports =  startRekognition;
 
