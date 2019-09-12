@@ -10,6 +10,7 @@ let frameCount = 0;
 let run = true;
 let sessionData = [];
 let engagementThreshold = 20;
+const emotionThreshold = 50;
 const S3imageDelay = 3;
 const rekognitionDelay = 4;
 
@@ -39,14 +40,21 @@ function facialRecognition (frameCount) {
     let parsed = JSON.parse(stdout);
     if(parsed.FaceDetails) {
       let output = parsed.FaceDetails;
-      let frameData = output.reduce( ( engagementCount, person ) => {
+      let frameData = output.reduce( ( dataCount, person ) => {
         if (Math.abs(person.Pose.Yaw) < engagementThreshold && Math.abs(person.Pose.Pitch) < engagementThreshold ) {
-          engagementCount.Engaged++;
+          dataCount.Engaged++;
         } else {
-          engagementCount.Unengaged++;
+          dataCount.Unengaged++;
         }
-        return engagementCount;
-      }, { Engaged: 0, Unengaged: 0});
+        dataCount.Average = dataCount.Engaged / ( dataCount.Engaged + dataCount.Unengaged );
+        // let emotionArray = output.Emotions;
+        // for( let i = 0; i < emotionArray.length; i++ ){
+        //   if( emotionArray[i].Confidence > emotionThreshold ){
+        //     dataCount.Emotion.push(emotionArray[i].Type);
+        //   }
+        // }
+        return dataCount;
+      }, { Engaged: 0, Unengaged: 0, Average: 0, Emotion: [] }).Average;
       console.log(`Engaged: ${frameData.Engaged}, Unengaged: ${frameData.Unengaged}`);
       sessionData.push(frameData);
     }
@@ -55,23 +63,24 @@ function facialRecognition (frameCount) {
   });
 }
 
-function sessionAnalysis ( sessionDataArray ){
-
-  let data = sessionDataArray.reduce( (accumulator, frame) => {
-    accumulator.Engaged += frame.Engaged;
-    accumulator.Unengaged += frame.Unengaged;
-    return accumulator;
-  }, { Engaged:0, Unengaged:0 });
-  console.log( data );
-  return data;
-}
+// function sessionAnalysis ( sessionDataArray ){
+//
+//   let data = sessionDataArray.reduce( (accumulator, frame) => {
+//     accumulator.Engaged += frame.Engaged;
+//     accumulator.Unengaged += frame.Unengaged;
+//     return accumulator;
+//   }, { Engaged:0, Unengaged:0 });
+//   console.log( data );
+//   return data;
+// }
 
 const startRekognition = ( () => {
   const looper = setInterval(function () {
     let picCount = 0;
-    if (picCount > 30) {
+    if (picCount > 15) {
       console.log('--------stopping---------');
-      sessionAnalysis(sessionData);
+      // sessionAnalysis(sessionData);
+      return sessionData;
       clearInterval(looper);
     }
       frameCount++;
