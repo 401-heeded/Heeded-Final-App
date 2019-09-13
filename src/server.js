@@ -9,7 +9,7 @@ const morgan = require('morgan');
 const errorHandler = require('./middleware/error.js');
 const notFound = require('./middleware/404.js');
 const authRouter = require('./auth/router.js');
-const startRekognition = require('./rekognition/rekognition');
+const Rekognition = require('./rekognition/rekognition');
 
 // Prepare the express server
 const server = express();
@@ -28,12 +28,16 @@ server.use(express.urlencoded({ extended: true }));
 server.use(authRouter);
 
 server.get('/data', renderDataAnalytics);
-// testing route - change later
-server.get('/test', startRekognition);
+server.get('/init', Rekognition.startRekognition);
+server.get('/getValue', sendData);
 server.get('/', renderHomePage);
 
 function renderDataAnalytics (req, res) {
-  res.render('../front-end/public/analytics')
+  res.render('../front-end/public/analytics', {engagement : Rekognition.engagement});
+}
+
+function sendData (req, res) {
+  res.send({engagement : Rekognition.engagement});
 }
 
 function renderHomePage (req, res) {
