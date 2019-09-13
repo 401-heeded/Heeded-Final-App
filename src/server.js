@@ -33,7 +33,7 @@ server.get('/getValue', sendData);
 server.get('/', renderHomePage);
 
 function renderDataAnalytics (req, res) {
-  res.render('../front-end/public/analytics', {engagement : Rekognition.engagement});
+  res.render('../front-end/views/pages/analytics', {engagement : Rekognition.engagement});
 }
 
 function sendData (req, res) {
@@ -41,7 +41,7 @@ function sendData (req, res) {
 }
 
 function renderHomePage (req, res) {
-  res.render('../front-end/public/index')
+  res.render('../front-end/views/pages/index')
 }
 // Catchalls
 server.use(notFound);

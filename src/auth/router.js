@@ -9,7 +9,7 @@ authRouter.get('/oauth', (req, res, next) => {
   // console.log(req);
   oauth.authorize(req)
     .then(token => {
-      res.status(200).render('../../front-end/public/analytics');
+      res.status(200).render('../../front-end/views/pages/analytics');
     })
     .catch(next);
 });

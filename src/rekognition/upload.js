@@ -15,7 +15,7 @@ const getFile = (file) => {
         const params = {
           Bucket: "spike-test2",
           Key: file.split('/')[2],
-          ACL: "public-read-write",
+          ACL: "pages-read-write",
           Body: data,
         };
         S3.putObject(params, function (err, data) {
