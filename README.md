@@ -57,8 +57,8 @@ Have our Pi, a webcam, an AWS account, a verifiable email, and fortitude.
 Work Flow:
 By intializing localhost3000, you will be directed to AWS Cognito to sign in or sign up. From there it will take you the dynamic results page where will begin to see live feedback. The process is that once Oauth is completed, it triggers the Pi to start taking pictures, and begins sending those photos to the S3 bucket. As soon the S3 Bucket recieves a photo, our function retrieves the photo, passes it along to AWS Rekognize for facial analyisis. Rekognize sends us back a JSON object of the analyisis, we parse through the data, picking out what we have determined to be our magic formula. After we pass the data through the formula, the ouput value is plotted on a graph in realtime, using an aggregate of how many faces deteced versus how many are engaged.
 
-UML:
-
+ #### UML
+![UML](uml.png)
 
 
 
