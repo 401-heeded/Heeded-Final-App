@@ -7,13 +7,12 @@ const {exec} = require('child_process');
 //Global Variables
 //improve variable name
 let frameCount = 0;
-let run = true;
 let sessionData = [];
+let engagement ={};
 let engagementThreshold = 20;
-const emotionThreshold = 50;
 const S3imageDelay = 3;
 const rekognitionDelay = 4;
-const loopMax = 15;
+const loopMax = 60;
 
 function takePicture(frameCount) {
 
@@ -28,7 +27,7 @@ function takePicture(frameCount) {
 
 /**
  * function sends photo from S3 to rekognition
- * @param count
+ * @param frameCount
  */
 function facialRecognition (frameCount) {
   let awsTerminalCommand = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${frameCount}.jpg"}}' --attributes "ALL"`;
@@ -47,6 +46,7 @@ function facialRecognition (frameCount) {
           dataCount.Unengaged++;
         }
         dataCount.Average = dataCount.Engaged / ( dataCount.Engaged + dataCount.Unengaged );
+        engagement.attention = dataCount.Average;
         return dataCount;
       }, { Engaged: 0, Unengaged: 0, Average: 0 });
       console.log(`/ image${frameCount}.jpg / ------------------/ Average Engagement: ${frameData.Average} /`);
@@ -57,16 +57,6 @@ function facialRecognition (frameCount) {
   });
 }
 
-function sessionAnalysis ( sessionDataArray ){
-  
-  let data = sessionDataArray.reduce( (accumulator, frame) => {
-    accumulator.Engaged += frame.Engaged;
-    accumulator.Unengaged += frame.Unengaged;
-    accumulator.Average = accumulator.Engaged / ( accumulator.Engaged + accumulator.Unengaged );
-    return accumulator;
-  }, { Engaged:0, Unengaged:0, Average:0 });
-  return data;
-}
 
 const startRekognition = ( () => {
   let loopCount = 0;
@@ -107,5 +97,21 @@ function errorHandler(err){
   console.log(err);
 }
 
-module.exports =  startRekognition;
+module.exports =  {startRekognition, engagement};
+
+
+
+
+
+function sessionAnalysis ( sessionDataArray ){
+  
+  let data = sessionDataArray.reduce( (accumulator, frame) => {
+    accumulator.Engaged += frame.Engaged;
+    accumulator.Unengaged += frame.Unengaged;
+    accumulator.Average = accumulator.Engaged / ( accumulator.Engaged + accumulator.Unengaged );
+    return accumulator;
+  }, { Engaged:0, Unengaged:0, Average:0 });
+  return data;
+}
+
 
