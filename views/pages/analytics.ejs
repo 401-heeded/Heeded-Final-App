@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+  <div class="wrapper">
+
+      <div style="height: 400px; width: 800px;" id="graph" ></div>
+      <script>
+        function rand() {
+          return Math.random();
+        }
+
+        var time = new Date();
+
+        var data = [{
+          x: [time],
+          y: [rand],
+          mode: 'lines',
+          line: {
+            color: '#80CAF6',
+            //shape: 'spline'
+          }
+        }]
+
+        Plotly.plot('graph', data);
+
+        var cnt = 0;
+
+        var interval = setInterval(function() {
+
+          var time = new Date();
+          
+        $.get('http://localhost:3000/getValue')
+          .done(function(data) {
+            
+          if(data){
+            var update = {
+              x:  [[time]],
+              y: [[data.engagement.attention]]
+            };
+            Plotly.extendTraces('graph', update, [0])
+          }
+          
+          });
+            
+            
+        }, 1500);
+        
+        
+        
+      </script>
+  </div>
+</body>
+
+</html>

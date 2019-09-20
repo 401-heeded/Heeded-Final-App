@@ -9,9 +9,13 @@ const morgan = require('morgan');
 const errorHandler = require('./middleware/error.js');
 const notFound = require('./middleware/404.js');
 const authRouter = require('./auth/router.js');
+const Rekognition = require('./rekognition/rekognition');
 
 // Prepare the express server
 const server = express();
+
+// Set the view engine for server-side templating
+server.set('view engine', 'ejs');
 
 // App Level MW
 server.use(cors());
@@ -23,6 +27,22 @@ server.use(express.urlencoded({ extended: true }));
 // Routes
 server.use(authRouter);
 
+server.get('/data', renderDataAnalytics);
+server.get('/init', Rekognition.startRekognition);
+server.get('/getValue', sendData);
+server.get('/', renderHomePage);
+
+function renderDataAnalytics (req, res) {
+  res.render('pages/analytics', {engagement : Rekognition.engagement});
+}
+
+function sendData (req, res) {
+  res.send({engagement : Rekognition.engagement});
+}
+
+function renderHomePage (req, res) {
+  res.render('pages/index')
+}
 // Catchalls
 server.use(notFound);
 server.use(errorHandler);
