@@ -1,6 +1,6 @@
 'use strict';
 
-const upload = require('./s3/upload');
+const upload = require('./src/rekognition/upload');
 
 const {exec} = require('child_process');
 

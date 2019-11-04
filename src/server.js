@@ -8,8 +8,6 @@ const morgan = require('morgan');
 // Esoteric Resources
 const errorHandler = require('./middleware/error.js');
 const notFound = require('./middleware/404.js');
-const authRouter = require('./auth/router.js');
-const Rekognition = require('./rekognition/rekognition');
 
 // Prepare the express server
 const server = express();
@@ -25,10 +23,8 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
 // Routes
-server.use(authRouter);
 
 server.get('/data', renderDataAnalytics);
-server.get('/init', Rekognition.startRekognition);
 server.get('/getValue', sendData);
 server.get('/', renderHomePage);
 
