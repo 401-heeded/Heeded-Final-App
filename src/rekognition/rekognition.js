@@ -5,7 +5,6 @@ const upload = require('./upload');
 const {exec} = require('child_process');
 
 //Global Variables
-//improve variable name
 let frameCount = 0;
 let sessionData = [];
 let engagement ={};
@@ -86,7 +85,6 @@ const startRekognition = ( () => {
     if (frameCount > rekognitionDelay) {
       facialRecognition(frameCount - 2);
     }
-    
     loopCount++;
     
   }, 1500);
