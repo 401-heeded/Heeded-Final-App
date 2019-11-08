@@ -2,6 +2,8 @@
 
 const upload = require('./upload');
 
+upload('./test.jpg');
+
 const {exec} = require('child_process');
 
 //Global Variables
@@ -29,7 +31,7 @@ function takePicture(frameCount) {
  * @param frameCount
  */
 function facialRecognition (frameCount) {
-  let awsTerminalCommand = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"spike-test2","Name":"image${frameCount}.jpg"}}' --attributes "ALL"`;
+  let awsTerminalCommand = `aws rekognition detect-faces --image '{"S3Object":{"Bucket":"heeded-bucket","Name":"image${frameCount}.jpg"}}' --attributes "ALL"`;
   exec(awsTerminalCommand, (error, stdout, stderr) => {
     if (error) {
       errorHandler(error);

@@ -13,11 +13,13 @@ const getFile = (file) => {
           throw err;
         }
         const params = {
-          Bucket: "spike-test2",
-          Key: file.split('/')[2],
-          ACL: "pages-read-write",
+          Bucket: "heeded-bucket",
+          Key: "test",
+          ACL: "public-read-write",
           Body: data,
         };
+
+        console.log(params)
         S3.putObject(params, function (err, data) {
           if (err) console.log(err, err.stack);
           else console.log(data);
@@ -25,6 +27,7 @@ const getFile = (file) => {
       }
     });
 };
+
 
 module.exports = getFile;
 
