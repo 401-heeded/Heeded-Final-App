@@ -18,7 +18,7 @@ Version: 0.9
 
 Libraries Used:
 
-"dependencies": {
+`"dependencies": {
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
