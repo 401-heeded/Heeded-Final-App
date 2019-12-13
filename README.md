@@ -19,7 +19,7 @@ Version: 0.9
 Libraries Used:
 
 
-```"dependencies": {
+"dependencies": {
     "bcrypt": "^3.0.6",
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
@@ -41,7 +41,7 @@ Libraries Used:
     "fs-extra": "6.0.1",
     "node-uuid": "1.4.8",
     "path": "0.12.7"
-  }```
+  }
 Current Libraries Used
 
 Technologies Used:
