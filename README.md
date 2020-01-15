@@ -6,19 +6,19 @@ Lillian Gales, Evan Brecht-Curry, Eric Huang, Brad Elliot, Chance Harmon
 
 ## Project Overview:
 
-*Description: Using Facial Recognition, develop a formula to be able to report the level of engagement from a group to assist the user in assessing the success in there speech.
+* Description: Using Facial Recognition, develop a formula to be able to report the level of engagement from a group to assist the user in assessing the success in there speech.
 
-*Domain: As a speaker or instructor, I would like to improve my skills in captivating and holding the attention of my audience. Current technology depends on indvidual feedback from the audience, after the speech is already delivered. I would like to be able to have realtime feedback to maximize my delivery.
+* Domain: As a speaker or instructor, I would like to improve my skills in captivating and holding the attention of my audience. Current technology depends on indvidual feedback from the audience, after the speech is already delivered. I would like to be able to have realtime feedback to maximize my delivery.
 
-*Resultions: Using new hardware, and newly developed software, we were able to capture the audience engagement in realtime, and return feedback to the user for them to make adjustments as needed.
+* Resultions: Using new hardware, and newly developed software, we were able to capture the audience engagement in realtime, and return feedback to the user for them to make adjustments as needed.
 
 ## Technologies Used:
-Rasberry Pi
-Webcam
-Node.js
-AWS Cognito
-AWS S3 Bucket
-AWS Rekognition
+* Rasberry Pi
+* Webcam
+* Node.js
+* AWS Cognito
+* AWS S3 Bucket
+* AWS Rekognition
 
 ## User Reqs:
 Have our Pi, a webcam, an AWS account, a verifiable email, and fortitude.
